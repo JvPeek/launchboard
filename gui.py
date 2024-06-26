@@ -17,17 +17,13 @@ class MainWindow(QMainWindow):
     docHash = ""
     def __init__(self):
         super().__init__()
-        self.setStyle(QStyleFactory.create("Fusion"))
+        #self.setStyle(QStyleFactory.create("Fusion"))
         self.setStyleSheet(open('./style.css').read())
         
         self.tab_widget = QTabWidget()
         self.setWindowTitle("LaunchBoard")
         self.setWindowIcon(QIcon('logo.png'))
 
-
-        settings_widget = SettingsWidget(self)
-        self.tab_widget.addTab(settings_widget, f"Settings")
-        
         self.grids = []
         for i in range(PAGES):
             grid_widget = GridWidget(self)
@@ -35,6 +31,10 @@ class MainWindow(QMainWindow):
             self.tab_widget.addTab(grid_widget, f"PAGE{i}")
             self.grids.append(grid_widget)
 
+        
+
+        settings_widget = SettingsWidget(self)
+        self.tab_widget.addTab(settings_widget, f"Settings")
         
         self.setCentralWidget(self.tab_widget)
 
@@ -131,13 +131,18 @@ class MainWindow(QMainWindow):
         
         self.getHashData()
         current_index = self.tab_widget.currentIndex()
+        if (current_index >= PAGES):
+            return
         current_grid = self.grids[current_index]
         page_config = current_grid.get_config()
         clipboard = QApplication.clipboard()
+        print((json.dumps(page_config)))
         clipboard.setText(json.dumps(page_config))
 
     def paste_page(self):
         current_index = self.tab_widget.currentIndex()
+        if (current_index >= PAGES):
+            return
         current_grid = self.grids[current_index]
         clipboard = QApplication.clipboard()
         page_config = clipboard.text()

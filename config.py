@@ -15,8 +15,8 @@ def getKeyMap(index):
     elif (index == 2):
         keyMap = [
             [[1,0, "PAGE0"], [1,0, "PAGE1"], [0,3, "PAGE2"], [1,0, "PAGE3"], [1,0, "PAGE4"], [1,0, "PAGE5"], [1,0, "PAGE6"], [1,0, "PAGE7"]],
-            [[0,0, None], [0,3, "up"], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,3, "x"]],
-            [[0,3, "left"], [0,3, "down"], [0,3, "right"], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [3,0, "z"]],
+            [[0,0, None], [0,3, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,3, None]],
+            [[0,0, None], [0,3, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [3,0, None]],
             [[0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,3, None]],
             [[0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [3,0, None]],
             [[0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,0, None], [0,3, None]],
@@ -52,6 +52,6 @@ def getKeyMap(index):
         ]
     return keyMap
 def getWelcomeString():
-    return "MEDDL"
+    return "BLANCO"
 def getDimmerValue():
-    return -0
+    return -2

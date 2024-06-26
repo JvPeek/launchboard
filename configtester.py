@@ -16,13 +16,12 @@ def loadConfig():
 
 
 
-def getKeyMap(index):
+def getKeyMap(index:int)->list:
     if (index == None):
         index = 0
     if (configData == None):
         loadConfig()
 
-    print("getting keymap")
     outputData = []
     configPage = configData['tab_' + str(index+1)]
 
@@ -35,7 +34,8 @@ def getKeyMap(index):
             if (key == "" or key == "None"):
                 key = None
             colData = [configPage[i*9+j]['r'],configPage[i*9+j]['g'],key]
-            rowData.append(colData)
+            rowData.append(configPage[i*9+j])
+
         outputData.append(rowData)
 
 
