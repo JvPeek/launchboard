@@ -8,6 +8,8 @@ import atexit
 import random
 import pyautogui
 import pygame
+from paho.mqtt import client as mqtt_client
+
 
 import launchpad_py as launchpad
 import configtester as config
@@ -30,6 +32,7 @@ def millis():
 nextUpdate = 0
 lastKey = millis()
 lastFlash = 0
+
 
 
 def updateLEDs():
