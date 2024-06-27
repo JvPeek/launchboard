@@ -11,7 +11,8 @@ import pygame
 
 import launchpad_py as launchpad
 import configtester as config
-
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu, QAction
 # config goes here
 flashTimer = 50
 dimTimer = 2000
@@ -53,7 +54,6 @@ def flash():
         return
     lp.LedAllOn()
     lastFlash = millis()
-    print("FLASH")
 
 
 def baseColorMap():
@@ -73,8 +73,6 @@ def baseColorMap():
                     ledData.append(lp.LedGetColor(col["r"]+dimmer, col["g"]+dimmer))
                 else:
                     rightData.append(lp.LedGetColor(col["r"]+dimmer, col["g"]+dimmer))
-
-    #ledData.append(topData)
     lp.LedCtrlRawRapidHome()
     lp.LedCtrlRawRapid(ledData + rightData + topData)
 
@@ -97,43 +95,13 @@ def releaseKey(key):
     
 def changePage(page):
     global keyMap, lp
-    lp.LedCtrlString(str(page+1), 0, 4, 0, 100)
+    lp.LedCtrlString(str(page+1), 0, 3, 1, 20)
     keyMap = config.getKeyMap(page)
 def playSound(sound):
     pygame.mixer.Sound("sounds/" + str(sound)).play()
     blink()
 
     
-
-# def pressKey(x, y):
-#     global keyMap, lastKey
-#     if (keyMap[x][y][2] == None):
-#         return
-#     if (keyMap[x][y][2].startswith('PAGE') ):
-#         page = int(''.join(filter(str.isdigit, keyMap[x][y][2])))
-        
-#         print("selecting page " + str(page))
-#         lp.LedCtrlString(str(page+1), 0, 4, 0, 100)
-
-#         keyMap = config.getKeyMap(page)
-        
-#     else:
-#         print("pressing key " + keyMap[x][y][2])
-        
-#         pyautogui.keyDown(keyMap[x][y][2])
-#         lastKey = millis()
-
-
-# def releaseKey(x, y):
-#     global keyMap
-#     if (keyMap[x][y][2] == None):
-#         return
-#     if (keyMap[x][y][2].startswith('PAGE') ):
-#         return
-    
-#     print("releasing key " + keyMap[x][y][2])
-#     pyautogui.keyUp(keyMap[x][y][2])
-
 
 def initLaunchpad():
     global lp
@@ -151,14 +119,34 @@ def initLaunchpad():
 
 def main():
     global lp, lastKey
+    app = QApplication([])
+    app.setQuitOnLastWindowClosed(True)
+
+
+    icon = QIcon("icon.png")
+    tray = QSystemTrayIcon()
+    tray.setIcon(icon)
+    tray.setVisible(True)
+    menu = QMenu()
+    
+
+
+    # Add a Quit option to the menu.
+    quit = QAction("Quit")
+    quit.triggered.connect(app.quit)
+    menu.addAction(quit)
+
+    # Add the menu to the tray
+    tray.setContextMenu(menu)
     pygame.mixer.init()
-                    
+
     initLaunchpad()
     lp.Reset()
     lp.LedCtrlString(config.getWelcomeString(), 0, 4, -1, 50)
 
     lastBut = (-99, -99)
     while True:
+
         buts = lp.ButtonStateXY()
 
         updateLEDs()
@@ -176,21 +164,23 @@ def main():
 
             if (thisConfig["pageEnabled"]):
                 if (buts[2] == 1):
-                    print("change page")
+                    
                     changePage(thisConfig["page"]-1)
 
             
             if (thisConfig["soundEnabled"]):
                 if (buts[2] == 1):
 
-                    print("play sound")
+                    
                     playSound(thisConfig["sound"])
-
+        time.sleep(0.01)
                 
 
 
 def exit_handler():
     global lp
+    if (lp == None):
+        return
     lp.Reset()
     print("bye ...")
 
@@ -198,4 +188,5 @@ def exit_handler():
 atexit.register(exit_handler)
 
 if __name__ == '__main__':
+    
     main()
