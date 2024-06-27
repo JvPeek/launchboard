@@ -7,19 +7,19 @@ A cute little python tool that lets you use your Novation Launchpad S as a keybo
 You'll need to have python and pip running on your machine. Venv helps but is not needed.
 
 ### Windows
-```
+```bash
 python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 ### Linux
-```
+```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 Sometimes alsa complains about a file not found. This helped in my case (Manjaro):
-```
+```bash
 sudo ln -s /usr/share/alsa/alsa.conf /usr/local/share/alsa/alsa.conf
 ```
 ### MacOS
@@ -30,7 +30,7 @@ This software is split into two parts. The GUI and the backend. Changes to the c
 
 ### The GUI
 To open the config GUI run
-```
+```bash
 cd src
 python gui.py
 ```
@@ -44,7 +44,7 @@ Save your config with the "save config" button (or ctrl+s)
 
 ### The backend
 To actually use the bloody thing run
-```
+```bash
 cd src
 python main.py
 ```
