@@ -18,3 +18,8 @@ QTabWidget {
     border: 2px solid red;
     
 }
+QPushButton {
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+}
