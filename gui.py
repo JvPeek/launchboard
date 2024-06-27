@@ -12,14 +12,18 @@ from grid_widget import GridWidget
 from settings_widget import SettingsWidget
 from constants import CONFIG_FILE, PAGES
 
+import qdarkstyle
+
+
 
 class MainWindow(QMainWindow):
     docHash = ""
     def __init__(self):
         super().__init__()
-        #self.setStyle(QStyleFactory.create("Fusion"))
-        self.setStyleSheet(open('./style.css').read())
         
+        app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=qdarkstyle.DarkPalette) + open('./style.css').read())
+        
+
         self.tab_widget = QTabWidget()
         self.setWindowTitle("LaunchBoard")
         self.setWindowIcon(QIcon('logo.png'))
@@ -28,7 +32,7 @@ class MainWindow(QMainWindow):
         for i in range(PAGES):
             grid_widget = GridWidget(self)
 
-            self.tab_widget.addTab(grid_widget, f"PAGE{i}")
+            self.tab_widget.addTab(grid_widget, f"PAGE{i+1}")
             self.grids.append(grid_widget)
 
         
@@ -72,7 +76,10 @@ class MainWindow(QMainWindow):
         about_action = QAction("About", self)
         about_action.triggered.connect(self.show_dialog)
         self.toolbar.addAction(about_action)
-    
+    def toggleStyle():
+        app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=qdarkstyle.LightPalette) + open('./style.css').read())
+        
+
     def show_dialog(self):
         dlg = QDialog()
         b1 = QPushButton("ok",dlg)
