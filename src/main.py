@@ -9,6 +9,8 @@ import random
 import pyautogui
 import pygame
 from paho.mqtt import client as mqtt_client
+from queue import Queue
+from threading import Thread
 
 
 import launchpad_py as launchpad
@@ -32,7 +34,6 @@ def millis():
 nextUpdate = 0
 lastKey = millis()
 lastFlash = 0
-
 
 
 def updateLEDs():
@@ -83,6 +84,15 @@ def blink():
     global lastKey
     lastKey = millis()
     updateLEDs()
+def keyPresser(keyQueue):
+    while True:
+        keyToPress = keyQueue.get()
+        if (keyToPress):
+            print(keyToPress)
+            if (keyToPress[0]):
+                pressKey(keyToPress[1])
+            else:
+                releaseKey(keyToPress[1])
 
 def pressKey(key):
     
@@ -100,6 +110,15 @@ def changePage(page):
     global keyMap, lp
     lp.LedCtrlString(str(page+1), 0, 3, 1, 20)
     keyMap = config.getKeyMap(page)
+
+
+
+def soundPlayer(soundQueue):
+    while True:
+        soundToPlay = soundQueue.get()
+        if (soundToPlay):
+            playSound(soundToPlay)
+
 def playSound(sound):
     try:
         pygame.mixer.Sound("sounds/" + str(sound)).play()
@@ -150,6 +169,17 @@ def main():
     lp.Reset()
     lp.LedCtrlString(config.getWelcomeString(), 0, 4, -1, 50)
 
+    soundQueue = Queue()
+    keyQueue = Queue()
+    pageQueue = Queue()
+    mqttQueue = Queue()
+    
+    soundThread = Thread(target = soundPlayer, args =(soundQueue, )) 
+    soundThread.start()
+
+    keyThread = Thread(target = keyPresser, args =(keyQueue, )) 
+    keyThread.start()
+
     lastBut = (-99, -99)
     while True:
 
@@ -162,12 +192,8 @@ def main():
             thisConfig = keyMap[buts[1]][buts[0]]
 
             if (thisConfig["keyEnabled"]):
-                if (buts[2] == 1):
-                    pressKey(thisConfig["key"])
-                    
-                else:
-                    releaseKey(thisConfig["key"])
-
+                keyQueue.put([buts[2], thisConfig["key"]])
+                
             if (thisConfig["pageEnabled"]):
                 if (buts[2] == 1):
                     
@@ -176,9 +202,8 @@ def main():
             
             if (thisConfig["soundEnabled"]):
                 if (buts[2] == 1):
-
+                    soundQueue.put(thisConfig["sound"])
                     
-                    playSound(thisConfig["sound"])
         time.sleep(0.01)
                 
 
