@@ -101,7 +101,10 @@ def changePage(page):
     lp.LedCtrlString(str(page+1), 0, 3, 1, 20)
     keyMap = config.getKeyMap(page)
 def playSound(sound):
-    pygame.mixer.Sound("sounds/" + str(sound)).play()
+    try:
+        pygame.mixer.Sound("sounds/" + str(sound)).play()
+    except:
+        print("sound not found")
     blink()
 
     
