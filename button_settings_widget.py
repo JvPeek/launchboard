@@ -24,8 +24,7 @@ class ButtonSettingsWidget(QWidget):
         layout.addRow("Emulate Key", self.key_enabled_checkbox)
 
         self.key_edit = QLineEdit(self)
-        self.key_edit.setText(
-            self.button.text() if self.button.text() != 'None' else '')
+        self.key_edit.setText(self.button.text())
         self.key_edit.textChanged.connect(self.update_button_property)
         layout.addRow("Key:", self.key_edit)
 
@@ -143,6 +142,7 @@ class ButtonSettingsWidget(QWidget):
     def update_button_property(self):
         if hasattr(self, 'key_edit'):
             self.button.setText(self.key_edit.text())
+            self.button.setProperty("key",self.key_edit.text())
         if hasattr(self, 'mqtt_enabled_checkbox'):
             self.button.setProperty('mqttEnabled', self.mqtt_enabled_checkbox.isChecked())
         if hasattr(self, 'mqtt_message_edit'):
