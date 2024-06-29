@@ -2,11 +2,11 @@ import sys
 import os
 import json
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QTabWidget, QDockWidget, QToolBar, QAction, QMessageBox, QStyleFactory, QDialog, QPushButton
+    QApplication, QMainWindow, QTabWidget, QDockWidget, QToolBar, QAction, QMessageBox, QStyleFactory, QDialog, QPushButton, QLabel, QVBoxLayout
 )
 import hashlib
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QKeySequence, QIcon
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap
 from button_settings_widget import ButtonSettingsWidget
 from grid_widget import GridWidget
 from settings_widget import SettingsWidget
@@ -74,18 +74,41 @@ class MainWindow(QMainWindow):
         self.toolbar.addAction(paste_page_action)
 
         about_action = QAction("About", self)
-        about_action.triggered.connect(self.show_dialog)
+        about_action.triggered.connect(self.show_about_dialog)
         self.toolbar.addAction(about_action)
     def toggleStyle():
         app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=qdarkstyle.LightPalette) + open('./style.css').read())
         
 
-    def show_dialog(self):
+    def show_about_dialog(self):
         dlg = QDialog()
-        b1 = QPushButton("ok",dlg)
+
+        layout = QVBoxLayout()
+
+        b1 = QPushButton("ok")
         b1.clicked.connect(dlg.close)
+        
+        self.logo = QLabel(self)
+
+        pixmap = QPixmap('./icon.png')
+
+        self.logo.resize(256, 256)
+        self.logo.setPixmap(pixmap.scaled(self.logo.size()))
+        self.text = QLabel(self)
+        self.text.setText("Made by JvPeek\n\nThis is still a work in progress.")
+        
+        
+
+        layout.addWidget(self.logo)
+
+
+        layout.addWidget(self.text)
+        layout.addStretch()
+        layout.addWidget(b1)
+        self.show()  
+        dlg.setLayout(layout)
         dlg.setWindowTitle("About") 
-        dlg.resize(250,300)
+        # dlg.resize(250,300)
         dlg.setWindowModality(Qt.ApplicationModal)
         dlg.exec_()
     
