@@ -219,7 +219,7 @@
             "pageEnabled": false,
             "page": 1,
             "r": 0,
-            "g": 0
+            "g": 2
         },
         {
             "mqttEnabled": null,
@@ -336,7 +336,7 @@
             "pageEnabled": false,
             "page": 1,
             "r": 0,
-            "g": 0
+            "g": 2
         },
         {
             "mqttEnabled": null,

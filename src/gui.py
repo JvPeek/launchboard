@@ -12,7 +12,7 @@ from grid_widget import GridWidget
 from settings_widget import SettingsWidget
 from constants import CONFIG_FILE, PAGES
 
-import qdarkstyle
+
 
 
 
@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=qdarkstyle.DarkPalette) + open('./style.css').read())
+        app.setStyleSheet(open('./style/Combinear.qss').read() + open('./style/style.css').read())
         
 
         self.tab_widget = QTabWidget()

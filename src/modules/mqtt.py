@@ -27,6 +27,7 @@ def connect():
     global client
     try:
         client.connect(configData["broker"],configData["port"])
+        print("connected")
     except:
         print ("connection failed")
 
