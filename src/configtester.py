@@ -4,13 +4,15 @@ import json
 import math
 
 configData = None
+currentPage = 1
 def getWelcomeString():
     return "MEDDL"
 def getDimmerValue():
     return -0
 def getMqttCredentials():
     return {"broker": "192.168.2.11", "port": 1883, "user": None, "pass": None}
-
+def getCurrentPage():
+    return currentPage
 def loadConfig():
     global configData
     with open(CONFIG_FILE, 'r') as file:
@@ -23,7 +25,7 @@ def getKeyMap(index:int)->list:
         index = 0
     if (configData == None):
         loadConfig()
-
+    currentPage = index
     outputData = []
     configPage = configData['tab_' + str(index+1)]
 

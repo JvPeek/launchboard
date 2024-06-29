@@ -2,6 +2,7 @@
 
 
 import sys
+import os
 import time
 import math
 import atexit
@@ -12,6 +13,7 @@ import pygame
 from queue import Queue
 from threading import Thread
 
+from constants import CONFIG_FILE
 
 import launchpad_py as launchpad
 import configtester as config
@@ -86,6 +88,20 @@ def blink():
     global lastKey
     lastKey = millis()
     updateLEDs()
+
+def configReloader(pageQueue):
+
+    last_modified = os.path.getmtime(CONFIG_FILE)
+    interval=1
+    while True:
+        current_modified = os.path.getmtime(CONFIG_FILE)
+        if current_modified != last_modified:
+            print("File has changed!")
+            config.loadConfig()
+            pageQueue.put(config.getCurrentPage())
+            last_modified = current_modified
+        time.sleep(interval)
+
 def keyPresser(keyQueue):
     while True:
         keyToPress = keyQueue.get()
@@ -192,6 +208,9 @@ def main():
     
     mqttThread = Thread(target = mqtt.thread, args =(mqttQueue, )) 
     mqttThread.start()
+    
+    configThread = Thread(target = configReloader, args =(pageQueue, )) 
+    configThread.start()
 
     lastBut = (-99, -99)
     while True:
