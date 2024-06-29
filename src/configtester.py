@@ -21,11 +21,12 @@ def loadConfig():
 
 
 def getKeyMap(index:int)->list:
+    global currentPage
     if (index == None):
         index = 0
     if (configData == None):
         loadConfig()
-    currentPage = index
+    currentPage = index+1
     outputData = []
     configPage = configData['tab_' + str(index+1)]
 
