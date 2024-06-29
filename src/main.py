@@ -8,13 +8,15 @@ import atexit
 import random
 import pyautogui
 import pygame
-from paho.mqtt import client as mqtt_client
+
 from queue import Queue
 from threading import Thread
 
 
 import launchpad_py as launchpad
 import configtester as config
+import modules.mqtt as mqtt
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu, QAction
 # config goes here
@@ -105,12 +107,19 @@ def releaseKey(key):
     if (key == None):
         return
     pyautogui.keyUp(key)
+def pageChanger(pageQueue):
+    while True:
+        pageToChangeTo = pageQueue.get()
+        if (pageToChangeTo):
+            changePage(pageToChangeTo-1)
     
 def changePage(page):
-    global keyMap, lp
-    lp.LedCtrlString(str(page+1), 0, 3, 1, 20)
+    global keyMap, lp, nextUpdate
     keyMap = config.getKeyMap(page)
-
+    nextUpdate = millis()
+    updateLEDs()
+    #lp.LedCtrlString(str(page+1), 0, 3, 1, 20)
+    
 
 
 def soundPlayer(soundQueue):
@@ -125,8 +134,6 @@ def playSound(sound):
     except:
         print("sound not found")
     blink()
-
-    
 
 def initLaunchpad():
     global lp
@@ -180,8 +187,15 @@ def main():
     keyThread = Thread(target = keyPresser, args =(keyQueue, )) 
     keyThread.start()
 
+    pageThread = Thread(target = pageChanger, args =(pageQueue, )) 
+    pageThread.start()
+    
+    mqttThread = Thread(target = mqtt.thread, args =(mqttQueue, )) 
+    mqttThread.start()
+
     lastBut = (-99, -99)
     while True:
+       
 
         buts = lp.ButtonStateXY()
 
@@ -193,16 +207,17 @@ def main():
 
             if (thisConfig["keyEnabled"]):
                 keyQueue.put([buts[2], thisConfig["key"]])
-                
             if (thisConfig["pageEnabled"]):
                 if (buts[2] == 1):
-                    
-                    changePage(thisConfig["page"]-1)
-
-            
+                    pageQueue.put(thisConfig["page"])
             if (thisConfig["soundEnabled"]):
                 if (buts[2] == 1):
                     soundQueue.put(thisConfig["sound"])
+            if (thisConfig["mqttEnabled"]):
+                if (buts[2] == 1):
+                    blink()
+                    mqttQueue.put([thisConfig["mqttTopic"],thisConfig["mqttMessage"]])
+                    
                     
         time.sleep(0.01)
                 
