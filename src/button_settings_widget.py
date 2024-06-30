@@ -95,6 +95,28 @@ class ButtonSettingsWidget(QWidget):
         layout.addRow("Red Value:", self.red_combo)
         layout.addRow("Green Value:", self.green_combo)
 
+        self.app_enabled_checkbox = QCheckBox(self)
+        self.app_enabled_checkbox.setChecked(self.button.property(
+            'appEnabled') if self.button.property('appEnabled') is not None else False)
+        self.app_enabled_checkbox.stateChanged.connect(
+            self.update_button_property)
+        self.app_enabled_checkbox.stateChanged.connect(
+            self.toggle_app_field)
+        layout.addRow("Run app", self.app_enabled_checkbox)
+
+        self.app_edit = QLineEdit(self)
+        self.app_edit.textChanged.connect(self.update_button_property)
+        self.app_edit.setText(self.button.property(
+            'app') if self.button.property('app') else '')
+        self.app_parameters_edit = QLineEdit(self)
+
+        self.app_parameters_edit.textChanged.connect(self.update_button_property)
+        self.app_parameters_edit.setText(self.button.property(
+            'appParameters') if self.button.property('appParameters') else '')
+        layout.addRow("App File:", self.app_edit)
+        layout.addRow("Parameters:", self.app_parameters_edit)
+
+
         # Add copy and paste buttons
         button_layout = QHBoxLayout()
         copy_button = QPushButton("Copy")
@@ -140,6 +162,8 @@ class ButtonSettingsWidget(QWidget):
         return int(page) - 1 if page else 0
 
     def update_button_property(self):
+        if hasattr(self, 'key_enabled_checkbox'):
+            self.button.setProperty('keyEnabled', self.key_enabled_checkbox.isChecked())
         if hasattr(self, 'key_edit'):
             self.button.setText(self.key_edit.text())
             self.button.setProperty("key",self.key_edit.text())
@@ -153,12 +177,16 @@ class ButtonSettingsWidget(QWidget):
             self.button.setProperty('soundEnabled', self.sound_enabled_checkbox.isChecked())
         if hasattr(self, 'sound_edit'):
             self.button.setProperty('sound', self.sound_edit.text())
-        if hasattr(self, 'key_enabled_checkbox'):
-            self.button.setProperty('keyEnabled', self.key_enabled_checkbox.isChecked())
         if hasattr(self, 'page_enabled_checkbox'):
             self.button.setProperty('pageEnabled', self.page_enabled_checkbox.isChecked())
         if hasattr(self, 'page_combo'):
             self.button.setProperty('page', self.page_combo.currentData())
+        if hasattr(self, 'app_enabled_checkbox'):
+            self.button.setProperty('appEnabled', self.app_enabled_checkbox.isChecked())
+        if hasattr(self, 'app_edit'):
+            self.button.setProperty('app', self.app_edit.text())
+        if hasattr(self, 'app_parameters_edit'):
+            self.button.setProperty('appParameters', self.app_parameters_edit.text())
 
 
     def copy_settings(self):
@@ -174,7 +202,11 @@ class ButtonSettingsWidget(QWidget):
             'sound': self.sound_edit.text(),
             'keyEnabled': self.key_enabled_checkbox.isChecked(),
             'pageEnabled': self.page_enabled_checkbox.isChecked(),
-            'page': self.page_combo.currentData()
+            'page': self.page_combo.currentData(),
+            'appEnabled': self.app_enabled_checkbox.isChecked(),
+            'app': self.app_edit.text(),
+            'appParameters': self.app_parameters_edit.text(),
+            
         }
         clipboard = QApplication.clipboard()
         clipboard.setText(json.dumps(settings))
@@ -197,6 +229,10 @@ class ButtonSettingsWidget(QWidget):
             self.key_enabled_checkbox.setChecked(settings['keyEnabled'])
             self.page_enabled_checkbox.setChecked(settings['pageEnabled'])
             self.page_combo.setCurrentIndex(settings['page'] - 1)
+
+            self.app_enabled_checkbox.setChecked(settings['appEnabled'])
+            self.app_edit.setText(settings['app'])
+            self.app_parameters_edit.setText(settings['appParameters'])
         except (json.JSONDecodeError, KeyError):
             QMessageBox.warning(self, "Error", "Invalid clipboard data")
             
@@ -204,6 +240,7 @@ class ButtonSettingsWidget(QWidget):
         self.toggle_sound_fields()
         self.toggle_key_field()
         self.toggle_page_field()
+        self.toggle_app_field()
 
     def toggle_mqtt_fields(self):
         is_checked = self.mqtt_enabled_checkbox.isChecked()
@@ -222,3 +259,7 @@ class ButtonSettingsWidget(QWidget):
         is_checked = self.page_enabled_checkbox.isChecked()
         self.page_combo.setEnabled(is_checked)
 
+    def toggle_app_field(self):
+        is_checked = self.app_enabled_checkbox.isChecked()
+        self.app_edit.setEnabled(is_checked)
+        self.app_parameters_edit.setEnabled(is_checked)

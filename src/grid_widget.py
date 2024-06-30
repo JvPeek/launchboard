@@ -68,6 +68,9 @@ class GridWidget(QWidget):
                 button.setProperty("mqttTopic", btn_config.get('mqttTopic', False))
                 button.setProperty("soundEnabled", btn_config.get('soundEnabled', False))
                 button.setProperty("sound", btn_config.get('sound', False))
+                button.setProperty("appEnabled", btn_config.get('appEnabled', False))
+                button.setProperty("app", btn_config.get('app', False))
+                button.setProperty("appParameters", btn_config.get('appParameters', False))
 
                 button.setStyleSheet(f"background-color: {color_code};")
 
@@ -80,6 +83,9 @@ class GridWidget(QWidget):
                 'mqttTopic': button.property("mqttTopic"),
                 'soundEnabled': button.property("soundEnabled"),
                 'sound': button.property("sound"),
+                'appEnabled': button.property("appEnabled"),
+                'app': button.property("app"),
+                'appParameters': button.property("appParameters"),
                 'keyEnabled': button.property("keyEnabled"),
                 'key': button.property("key"),
                 'pageEnabled': button.property("pageEnabled"),

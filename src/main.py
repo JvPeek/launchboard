@@ -14,6 +14,7 @@ from queue import Queue
 from threading import Thread
 
 from constants import CONFIG_FILE
+import subprocess
 
 import launchpad_py as launchpad
 import configtester as config
@@ -106,7 +107,6 @@ def keyPresser(keyQueue):
     while True:
         keyToPress = keyQueue.get()
         if (keyToPress):
-            print(keyToPress)
             if (keyToPress[0]):
                 pressKey(keyToPress[1])
             else:
@@ -150,6 +150,18 @@ def playSound(sound):
     except:
         print("sound not found")
     blink()
+def appRunner(appQueue):
+     while True:
+        appToRun = appQueue.get()
+        if (appToRun):
+            runApp(appToRun)
+
+def runApp(appToRun):
+    print ("Running App " + str(appToRun[0]) + " with parameter "+ str(appToRun[1]))
+    newThread = Thread(target = os.system, args =((appToRun[0] + " " + appToRun[1]), )) 
+    newThread.start()
+    
+
 
 def initLaunchpad():
     global lp
@@ -196,6 +208,7 @@ def main():
     keyQueue = Queue()
     pageQueue = Queue()
     mqttQueue = Queue()
+    appQueue = Queue()
     
     soundThread = Thread(target = soundPlayer, args =(soundQueue, )) 
     soundThread.start()
@@ -208,6 +221,9 @@ def main():
     
     mqttThread = Thread(target = mqtt.thread, args =(mqttQueue, )) 
     mqttThread.start()
+
+    appThread = Thread(target = appRunner, args =(appQueue, )) 
+    appThread.start()
     
     configThread = Thread(target = configReloader, args =(pageQueue, )) 
     configThread.start()
@@ -236,6 +252,10 @@ def main():
                 if (buts[2] == 1):
                     blink()
                     mqttQueue.put([thisConfig["mqttTopic"],thisConfig["mqttMessage"]])
+
+            if (thisConfig["appEnabled"]):
+                if (buts[2] == 1):
+                    appQueue.put([thisConfig["app"], thisConfig["appParameters"]])
                     
                     
         time.sleep(0.01)
